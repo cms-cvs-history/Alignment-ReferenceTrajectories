@@ -1,4 +1,4 @@
-PSet CosmicsReferenceTrajectoryFactory =
+PSet BzeroReferenceTrajectoryFactory =
 {
     bool ReverseHits = false
     string MaterialEffects = "Combined"
