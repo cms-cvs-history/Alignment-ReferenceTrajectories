@@ -1,0 +1,111 @@
+###############################################################
+# 
+# Configuration blocks for the TrajectoryFactories inheriting 
+# from TrajectoryFactoryBase.
+# Include this file and do e.g.
+# PSet TrajectoryFactory = {
+#   using ReferenceTrajectoryFactory
+# }
+# 
+###############################################################
+
+###############################################################
+#
+# Common to all TrajectoryFactories
+#
+###############################################################
+block TrajectoryFactoryBase = 
+{
+    string MaterialEffects = "Combined" # or "MultipleScattering" or "EnergyLoss" or "None"
+    bool UseInvalidHits = false # if false, invalid hits are skipped
+}
+
+###############################################################
+#
+# ReferenceTrajectoryFactory
+#
+###############################################################
+block ReferenceTrajectoryFactory = 
+{
+    string TrajectoryFactoryName = "ReferenceTrajectoryFactory"
+
+    using TrajectoryFactoryBase
+
+    double ParticleMass = 0.10565836 #muons or  0.00051100 for electrons
+}
+
+###############################################################
+#
+# BzeroReferenceTrajectoryFactory
+#
+###############################################################
+block BzeroReferenceTrajectoryFactory =
+{
+    string TrajectoryFactoryName = "BzeroReferenceTrajectoryFactory"
+
+    using TrajectoryFactoryBase
+
+    double ParticleMass = 0.10565836 # or 0.00051100 for electrons
+    double MomentumEstimate = 1.5
+}
+
+###############################################################
+#
+# TwoBodyDecayReferenceTrajectoryFactory
+#
+###############################################################
+block TwoBodyDecayTrajectoryFactory =
+{
+    string TrajectoryFactoryName = "TwoBodyDecayTrajectoryFactory"
+
+    using TrajectoryFactoryBase
+
+    # Set cut value for matching the trajectory states at the innermost layer.
+    double NSigmaCut = 10.0
+
+    # Reuse innermost or refitted trajectory state for propagating the trajectories outward?
+    bool UseRefittedState = true
+
+    # Construct the trajectory states of the reference trajectory with errors?
+    bool ConstructTsosWithErrors = false
+
+    # Set properties of the beam spot (for the estimator).
+    PSet BeamSpot = 
+    {
+        # Position of beam spot.
+        double MeanX = 0.
+        double MeanY = 0.
+        double MeanZ = 0.
+
+        # Error of beam spot. Set to arbitrary large value if not known.
+        double VarXX = 2.25e-6 #1e3
+        double VarXY = 0.
+        double VarYY = 2.25e-6 #1e3
+        double VarXZ = 0.
+        double VarYZ = 0.
+        double VarZZ = 28.09 #1e3
+    }
+
+    # Set properties of involved particles (for the estimator).
+    PSet ParticleProperties =
+    {
+        # Z->2mu
+        double PrimaryMass = 91.1876
+        double PrimaryWidth = 2.4952
+        double SecondaryMass = 0.105658
+
+        # J/Psi->2mu
+        #double PrimaryMass = 3.097
+        #double PrimaryWidth = 9.1e-5
+        #double SecondaryMass = 0.105658
+    }
+
+    # Configure the estimator.
+    PSet EstimatorParameters =
+    {
+        untracked double RobustificationConstant = 1.0
+        untracked double MaxIterationDifference = 1e-2
+        untracked int32 MaxIterations = 100
+        untracked bool UseInvariantMass = true
+    }
+}
