@@ -17,6 +17,7 @@
 block TrajectoryFactoryBase = 
 {
     string MaterialEffects = "Combined" # or "MultipleScattering" or "EnergyLoss" or "None"
+    string PropagationDirection = "alongMomentum" # or "oppositeToMomentum" or "anyDirection"
     bool UseInvalidHits = false # if false, invalid hits are skipped
 }
 
