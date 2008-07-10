@@ -19,8 +19,9 @@ block TrajectoryFactoryBase =
     string MaterialEffects = "Combined" # or "MultipleScattering" or "EnergyLoss" or "None"
     string PropagationDirection = "alongMomentum" # or "oppositeToMomentum" or "anyDirection"
 
+    bool UseHitWithoutDet = true # if true, RecHits that are not attached to GeomDets are skipped
     bool UseInvalidHits = false # if false, invalid hits are skipped
-    bool UseProjectedHits = false # if false, projected hits are skipped
+    bool UseProjectedHits = true # if false, projected hits are skipped
 }
 
 ###############################################################
@@ -37,6 +38,7 @@ block ReferenceTrajectoryFactory =
     double ParticleMass = 0.10565836 #muons or  0.00051100 for electrons
 }
 
+
 ###############################################################
 #
 # BzeroReferenceTrajectoryFactory
@@ -49,8 +51,40 @@ block BzeroReferenceTrajectoryFactory =
     using TrajectoryFactoryBase
 
     double ParticleMass = 0.10565836 # or 0.00051100 for electrons
-    double MomentumEstimate = 1.5
+    double MomentumEstimate = 2.0
 }
+
+
+###############################################################
+#
+# DualTrajectoryFactory
+#
+###############################################################
+block DualTrajectoryFactory = 
+{
+    string TrajectoryFactoryName = "DualTrajectoryFactory"
+
+    using TrajectoryFactoryBase
+
+    double ParticleMass = 0.10565836 #muons or  0.00051100 for electrons
+}
+
+
+###############################################################
+#
+# DualBzeroTrajectoryFactory
+#
+###############################################################
+block DualBzeroTrajectoryFactory = 
+{
+    string TrajectoryFactoryName = "DualBzeroTrajectoryFactory"
+
+    using TrajectoryFactoryBase
+
+    double ParticleMass = 0.10565836 #muons or  0.00051100 for electrons
+    double MomentumEstimate = 2.0
+}
+
 
 ###############################################################
 #
@@ -81,12 +115,12 @@ block TwoBodyDecayTrajectoryFactory =
         double MeanZ = 0.
 
         # Error of beam spot. Set to arbitrary large value if not known.
-        double VarXX = 1e3 # 2.25e-6
+        double VarXX = 2.25e-6
         double VarXY = 0.
-        double VarYY = 1e3 # 2.25e-6
+        double VarYY = 2.25e-6
         double VarXZ = 0.
         double VarYZ = 0.
-        double VarZZ = 1e3 # 28.09
+        double VarZZ = 28.09
     }
 
     # Set properties of involved particles (for the estimator).
