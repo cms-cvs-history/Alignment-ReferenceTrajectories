@@ -157,67 +157,55 @@ block TwoBodyDecayTrajectoryFactory =
 block CombinedTrajectoryFactory = 
 {
     string TrajectoryFactoryName = "CombinedTrajectoryFactory"
+    using TrajectoryFactoryBase # will not be used!
 
     vstring TrajectoryFactoryNames =
     {
-	"TwoBodyDecayTrajectoryFactory",
-	"ReferenceTrajectoryFactory"
+	"TwoBodyDecayTrajectoryFactory,TwoBody", # look for PSet called TwoBody
+	"ReferenceTrajectoryFactory,Reference"   # look for PSet called Reference
     }
+    bool useAllFactories = false # if false only takes first successful
 
-    using TrajectoryFactoryBase
+    # now one PSet for each of the configured trajectories:
+    PSet TwoBody   = { using TwoBodyDecayTrajectoryFactory}
+    PSet Reference = { using ReferenceTrajectoryFactory}
+}
 
-    # Config for ReferenceTrajectoryFactory
+###############################################################
+#
+# CombinedTrajectoryFactory using too instances of BzeroReferenceTrajectoryFactory,
+# one propagating alongMomentum, one oppositeToMomentum.
+#
+###############################################################
+block CombinedFwdBwdBzeroTrajectoryFactory = 
+{
+    string TrajectoryFactoryName = "CombinedTrajectoryFactory"
+    using TrajectoryFactoryBase # will not be used!
 
-    double ParticleMass = 0.10565836 #muons or  0.00051100 for electrons
-
-    # Config for TwoBodyDecayReferenceTrajectoryFactory
-
-    # Set cut value for matching the trajectory states at the innermost layer.
-    double NSigmaCut = 100.0
-
-    # Reuse innermost or refitted trajectory state for propagating the trajectories outward?
-    bool UseRefittedState = true
-
-    # Construct the trajectory states of the reference trajectory with errors?
-    bool ConstructTsosWithErrors = false
-
-    # Set properties of the beam spot (for the estimator).
-    PSet BeamSpot = 
+    vstring TrajectoryFactoryNames =
     {
-        # Position of beam spot.
-        double MeanX = 0.
-        double MeanY = 0.
-        double MeanZ = 0.
+	"BzeroReferenceTrajectoryFactory,FwdBzero", # look for PSet called FwdBzero 
+	"BzeroReferenceTrajectoryFactory,BwdBzero"  # look for PSet called BwdBzero
+    }
+    bool useAllFactories = true # if false only takes first successful
 
-        # Error of beam spot. Set to arbitrary large value if not known.
-        double VarXX = 1e3 # 2.25e-6
-        double VarXY = 0.
-        double VarYY = 1e3 # 2.25e-6
-        double VarXZ = 0.
-        double VarYZ = 0.
-        double VarZZ = 1e3 # 28.09
+    # now one PSet for each of the configured trajectories:
+    PSet FwdBzero = { using BzeroReferenceTrajectoryFactory}
+    PSet BwdBzero = { #using BzeroReferenceTrajectoryFactory # following replace does not work
+# so I have to repeat here...
+# replace CombinedFwdBwdBzeroTrajectoryFactory.BwdBzero.PropagationDirection = "oppositeToMomentum"
+	string TrajectoryFactoryName = "BzeroReferenceTrajectoryFactory"
+
+	string MaterialEffects = "Combined"
+	string PropagationDirection = "oppositeToMomentum" # "alongMomentum" or "anyDirection"
+	
+	bool UseHitWithoutDet = true
+	bool UseInvalidHits = false
+	bool UseProjectedHits = true
+	
+	double ParticleMass = 0.10565836 # or 0.00051100 for electrons
+	double MomentumEstimate = 2.0
     }
 
-    # Set properties of involved particles (for the estimator).
-    PSet ParticleProperties =
-    {
-        # Z->2mu
-        double PrimaryMass = 91.1876
-        double PrimaryWidth = 2.4952
-        double SecondaryMass = 0.105658
 
-        # J/Psi->2mu
-        #double PrimaryMass = 3.097
-        #double PrimaryWidth = 9.1e-5
-        #double SecondaryMass = 0.105658
-    }
-
-    # Configure the estimator.
-    PSet EstimatorParameters =
-    {
-        untracked double RobustificationConstant = 1.0
-        untracked double MaxIterationDifference = 1e-2
-        untracked int32 MaxIterations = 100
-        untracked bool UseInvariantMass = true
-    }
 }
